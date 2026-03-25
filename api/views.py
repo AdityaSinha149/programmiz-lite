@@ -7,7 +7,7 @@ from .models import Folder, File
 #takes input username, pass, cnfrm pass :
 #   if correct redirects to dashboard page
 #   if wrong returns a the request obj with an additional field error
-def register(request):
+def user_register(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -33,7 +33,7 @@ def register(request):
 #takes input username, pass :
 #   if correct redirects to dashboard page
 #   if wrong returns a the request obj with an additional field error
-def login(request):
+def user_login(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -54,4 +54,3 @@ def dashboard(request):
     user = request.user
     folders = Folder.objects.filter(user = user)
     return render(request, "dashboard.html", {"folders": folders})
-
