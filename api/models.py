@@ -1,27 +1,36 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from django.db import models
+from django.contrib.auth.models import User
+
 class Folder(models.Model):
     name = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="folders")
-    createdAt = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='subfolders'
+    )
 
     class Meta:
-        unique_together = ("user", "name")
-
-    def __str__(self):
-        return f"{self.name} ({self.user.username})"
-
-
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'parent', 'user'],
+                name='unique_folder_per_parent_per_user'
+            )
+        ]
 class File(models.Model):
-    filename = models.CharField(max_length=100)
-    folder = models.ForeignKey(Folder, on_delete=models.CASCADE, related_name="files")
-    createdAt = models.DateTimeField(auto_now_add=True)
-    updatedAt = models.DateTimeField(auto_now=True)
-    content = models.TextField()
+    name = models.CharField(max_length=100)
+    folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = ("folder", "filename")
-
-    def __str__(self):
-        return self.filename
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'folder', 'user'],
+                name='unique_file_per_folder_per_user'
+            )
+        ]
