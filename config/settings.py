@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 import os
-from urllib.parse import urlparse, unquote
 
 from pathlib import Path
 
@@ -83,13 +82,34 @@ TEMPLATES = [
 WSGI_APPLICATION = 'config.wsgi.application'
 
 
+def env(name, default=""):
+    return os.environ.get(name, default)
+
+
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-DATABASE_URL = os.environ.get("DATABASE_URL")
+postgres_name = env("DB_NAME") or env("POSTGRES_DB")
+postgres_user = env("DB_USER") or env("POSTGRES_USER")
+postgres_password = env("DB_PASSWORD") or env("POSTGRES_PASSWORD")
+postgres_host = env("DB_HOST") or env("POSTGRES_HOST")
+postgres_port = env("DB_PORT") or env("POSTGRES_PORT") or "5432"
 
-if DATABASE_URL:
-    parsed_url = urlparse(DATABASE_URL)
+if postgres_name and postgres_user and postgres_password and postgres_host:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": postgres_name,
+            "USER": postgres_user,
+            "PASSWORD": postgres_password,
+            "HOST": postgres_host,
+            "PORT": postgres_port,
+        }
+    }
+elif os.environ.get("DATABASE_URL"):
+    from urllib.parse import urlparse, unquote
+
+    parsed_url = urlparse(os.environ["DATABASE_URL"])
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
