@@ -8,36 +8,41 @@
 </head>
 <body>
     <div class="app-shell">
-        <section class="panel hero-panel">
-            <p class="eyebrow">Programmiz Lite</p>
-            <h1>Write and run .psa programs in the browser</h1>
-            <p class="hero-copy">
-                This is a lightweight programming workspace for <strong>.psa</strong> files.
-                A .psa file uses a C-like syntax, but it is intentionally limited and tied to the compiler binary provided with this project.
-            </p>
-
-            <div class="hero-grid">
-                <div class="hero-card">
-                    <h3>What you can do</h3>
-                    <p>Create folders, organize files, open a built-in editor, save code, and run .psa programs with interactive input.</p>
-                </div>
-                <div class="hero-card">
-                    <h3>About .psa</h3>
-                    <p>It is C-like, but not full C. Some language features, libraries, or system-level behavior may be unavailable depending on the compiler rules.</p>
-                </div>
-                <div class="hero-card">
-                    <h3>Output</h3>
-                    <p>Only .psa files show compile/run output. Other files can still be edited and saved, but they do not have a run panel.</p>
-                </div>
-                <div class="hero-card">
-                    <h3>Get started</h3>
-                    <p>Register a new account or log in to continue to your dashboard.</p>
-                </div>
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Programmiz Lite</p>
+                <h2>Home</h2>
             </div>
+            <div class="topbar-actions">
+                <a class="secondary-button" href="/register/">Register</a>
+                <a class="primary-button" href="/login/">Login</a>
+            </div>
+        </header>
 
-            <div class="hero-actions">
-                <a class="primary-button" href="/register/">Register</a>
-                <a class="secondary-button" href="/login/">Login</a>
+        <section class="panel">
+            <h1 class="home-title">Write and run .psa programs in the browser</h1>
+            <p class="home-copy">
+                Programmiz Lite is a lightweight workspace for <strong>.psa</strong> files.
+                The language is C-like, but it has limits and only works with the compiler binary provided for this project.
+            </p>
+        </section>
+
+        <section class="panel grid-two">
+            <div class="info-card">
+                <h3>What you can do</h3>
+                <p>Create folders, organize files, open the editor, save code, and run .psa programs with interactive input.</p>
+            </div>
+            <div class="info-card">
+                <h3>About .psa</h3>
+                <p>It looks like C, but it is not full C. Some language features, libraries, and system behavior may be limited or unsupported.</p>
+            </div>
+            <div class="info-card">
+                <h3>Output</h3>
+                <p>Only .psa files get a run button and output panel. Other files can still be edited and saved, but they are not executable here.</p>
+            </div>
+            <div class="info-card">
+                <h3>Get started</h3>
+                <p>Use the links above to register or log in and continue to your dashboard.</p>
             </div>
         </section>
     </div>
