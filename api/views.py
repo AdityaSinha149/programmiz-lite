@@ -9,6 +9,10 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+
+def home(request):
+    return render(request, "home.html")
+
 #takes input username, pass, cnfrm pass :
 #   if correct redirects to dashboard page
 #   if wrong returns a the request obj with an additional field error
