@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-qpju$7(_ox%516qv8y$@idti=350*=#3*c_t(hbvu9qufax=4!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "programmiz-lite.vercel.app",
+    ".vercel.app",
+]
 
 
 # Application definition
@@ -117,6 +122,11 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://programmiz-lite.vercel.app",
+    "https://*.vercel.app",
+]
 
 
 # Static files (CSS, JavaScript, Images)
