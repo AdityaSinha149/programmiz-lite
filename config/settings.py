@@ -94,6 +94,7 @@ postgres_user = env("DB_USER") or env("POSTGRES_USER")
 postgres_password = env("DB_PASSWORD") or env("POSTGRES_PASSWORD")
 postgres_host = env("DB_HOST") or env("POSTGRES_HOST")
 postgres_port = env("DB_PORT") or env("POSTGRES_PORT") or "5432"
+postgres_sslmode = env("DB_SSLMODE") or env("POSTGRES_SSLMODE") or "require"
 
 if postgres_name and postgres_user and postgres_password and postgres_host:
     DATABASES = {
@@ -104,6 +105,9 @@ if postgres_name and postgres_user and postgres_password and postgres_host:
             "PASSWORD": postgres_password,
             "HOST": postgres_host,
             "PORT": postgres_port,
+            "OPTIONS": {
+                "sslmode": postgres_sslmode,
+            },
         }
     }
 elif os.environ.get("DATABASE_URL"):
@@ -118,6 +122,9 @@ elif os.environ.get("DATABASE_URL"):
             "PASSWORD": unquote(parsed_url.password or ""),
             "HOST": parsed_url.hostname or "",
             "PORT": parsed_url.port or "5432",
+            "OPTIONS": {
+                "sslmode": env("DB_SSLMODE") or env("POSTGRES_SSLMODE") or "require",
+            },
         }
     }
 else:
