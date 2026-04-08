@@ -108,6 +108,17 @@ a {
     line-height: 1.6;
 }
 
+.info-list {
+    margin: 0;
+    padding-left: 18px;
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.info-list li {
+    margin-bottom: 6px;
+}
+
 .auth-panel {
     max-width: 520px;
     margin: 56px auto;

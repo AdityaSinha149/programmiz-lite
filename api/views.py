@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.http import HttpResponseForbidden
@@ -59,6 +59,11 @@ def user_login(request):
             return render(request, "login.html", {"error": "Invalid username or password"})
 
     return render(request, "login.html")
+
+
+def user_logout(request):
+    logout(request)
+    return redirect("/")
 
 #helper function to build breadcrumb path
 def get_folder_path(folder):

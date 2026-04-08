@@ -23,22 +23,40 @@
             <h1 class="home-title">Write and run .psa programs in the browser</h1>
             <p class="home-copy">
                 Programmiz Lite is a lightweight workspace for <strong>.psa</strong> files.
-                The language is C-like, but it has limits and only works with the compiler binary provided for this project.
+                The language is a restricted C-like subset with clear supported and unsupported features.
             </p>
         </section>
 
         <section class="panel grid-two">
             <div class="info-card">
-                <h3>What you can do</h3>
-                <p>Create folders, organize files, open the editor, save code, and run .psa programs with interactive input.</p>
+                <h3>What works in .psa</h3>
+                <ul class="info-list">
+                    <li>Types: <strong>int</strong>, <strong>char</strong>, <strong>void</strong></li>
+                    <li>Functions: declarations/prototypes and function definitions</li>
+                    <li>Scopes: global declarations and block scopes</li>
+                    <li>Statements: expression statements, <strong>if/else</strong>, <strong>while</strong>, <strong>return</strong>, nested blocks</li>
+                    <li>Expressions: assignment, arithmetic, relational, equality, logical AND/OR, unary <strong>-</strong> and <strong>!</strong></li>
+                    <li>Calls: function calls with argument lists</li>
+                    <li>Literals: integer and char literals</li>
+                </ul>
             </div>
             <div class="info-card">
-                <h3>About .psa</h3>
-                <p>It looks like C, but it is not full C. Some language features, libraries, and system behavior may be limited or unsupported.</p>
+                <h3>What is not supported</h3>
+                <ul class="info-list">
+                    <li>No <strong>struct</strong>, <strong>union</strong>, or <strong>enum</strong></li>
+                    <li>No pointers</li>
+                    <li>No <strong>typedef</strong></li>
+                    <li>No <strong>switch</strong></li>
+                    <li>Not full C standard library compatibility</li>
+                </ul>
             </div>
             <div class="info-card">
-                <h3>Output</h3>
-                <p>Only .psa files get a run button and output panel. Other files can still be edited and saved, but they are not executable here.</p>
+                <h3>Editor and runtime behavior</h3>
+                <ul class="info-list">
+                    <li>Only files ending with <strong>.psa</strong> show the <strong>Run</strong> button and output panel</li>
+                    <li>Other file types can be edited and saved, but not compiled/executed</li>
+                    <li>Program input is passed through the input box under the editor</li>
+                </ul>
             </div>
             <div class="info-card">
                 <h3>Get started</h3>
