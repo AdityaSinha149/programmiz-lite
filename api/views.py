@@ -8,6 +8,8 @@ from .models import Folder, File
 from pathlib import Path
 import subprocess
 import tempfile
+import shutil
+import os
 
 
 def home(request):
@@ -65,6 +67,32 @@ def get_folder_path(folder):
         path.insert(0, current)
         current = current.parent
     return path
+
+
+def get_runtime_compiler_path():
+    compiler_env_path = os.environ.get("COMPILER_PATH")
+    compiler_path = Path(compiler_env_path) if compiler_env_path else (Path(settings.BASE_DIR) / "compiler")
+
+    if not compiler_path.exists():
+        return None, f"Compiler binary not found at {compiler_path}"
+
+    # In serverless deployments, executing files directly from the app bundle can fail.
+    # Copying to /tmp and executing there is more reliable.
+    if os.environ.get("VERCEL"):
+        runtime_compiler_path = Path("/tmp") / "compiler-runtime"
+        try:
+            shutil.copy2(compiler_path, runtime_compiler_path)
+            runtime_compiler_path.chmod(0o755)
+            return runtime_compiler_path, None
+        except OSError as exc:
+            return None, f"Failed to prepare runtime compiler: {exc}"
+
+    try:
+        compiler_path.chmod(0o755)
+    except OSError:
+        pass
+
+    return compiler_path, None
 
 #when u redirect to dashboard page this runs and fetches the folders
 @login_required
@@ -135,8 +163,8 @@ def file_view(request, folder_id, file_id):
         if not is_psa:
             return HttpResponseForbidden("Run is only available for .psa files")
 
-        compiler_path = Path(settings.BASE_DIR) / "compiler"
-        if not compiler_path.exists():
+        compiler_path, compiler_error = get_runtime_compiler_path()
+        if compiler_error:
             return render(request, "file_view.html", {
                 "folder": folder,
                 "file": file,
@@ -145,7 +173,7 @@ def file_view(request, folder_id, file_id):
                 "editor_content": editor_content,
                 "stdin_value": stdin_value,
                 "output": "",
-                "error": f"Compiler binary not found at {compiler_path}",
+                "error": compiler_error,
             })
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -197,6 +225,18 @@ def file_view(request, folder_id, file_id):
                 output_text = run_process.stdout + run_process.stderr
             except subprocess.TimeoutExpired:
                 output_text = "Program timed out after 30 seconds."
+            except OSError as exc:
+                output_text = ""
+                return render(request, "file_view.html", {
+                    "folder": folder,
+                    "file": file,
+                    "breadcrumb": get_folder_path(folder),
+                    "is_psa": is_psa,
+                    "editor_content": editor_content,
+                    "stdin_value": stdin_value,
+                    "output": output_text,
+                    "error": f"Compiled output could not be executed: {exc}",
+                })
 
             return render(request, "file_view.html", {
                 "folder": folder,
