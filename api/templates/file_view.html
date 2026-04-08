@@ -30,7 +30,7 @@
         </section>
 
         <section class="panel">
-            <form method="POST" action="">
+            <form method="POST" action="/dashboard/folder/{{ folder.id }}/file/{{ file.id }}/">
                 {% csrf_token %}
                 <label class="field-label" for="content">Editor</label>
                 <textarea id="content" name="content" class="code-editor" spellcheck="false">{{ editor_content|default:file.content }}</textarea>
