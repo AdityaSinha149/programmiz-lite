@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: programmiz-lite
+    runtime: docker
+    autoDeploy: true
+    envVars:
+      - key: DEBUG
+        value: "False"
+      - key: DB_SSLMODE
+        value: "require"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"

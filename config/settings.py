@@ -23,15 +23,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-qpju$7(_ox%516qv8y$@idti=350*=#3*c_t(hbvu9qufax=4!'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+def env(name, default=""):
+    return os.environ.get(name, default)
 
-ALLOWED_HOSTS = [
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = env("DEBUG", "False").lower() == "true"
+
+default_allowed_hosts = [
     "localhost",
     "127.0.0.1",
     "programmiz-lite.vercel.app",
     ".vercel.app",
+    ".onrender.com",
 ]
+env_allowed_hosts = [host.strip() for host in env("ALLOWED_HOSTS", "").split(",") if host.strip()]
+ALLOWED_HOSTS = env_allowed_hosts or default_allowed_hosts
 
 
 # Application definition
@@ -80,11 +86,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'config.wsgi.application'
-
-
-def env(name, default=""):
-    return os.environ.get(name, default)
-
 
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
@@ -169,6 +170,7 @@ USE_TZ = True
 CSRF_TRUSTED_ORIGINS = [
     "https://programmiz-lite.vercel.app",
     "https://*.vercel.app",
+    "https://*.onrender.com",
 ]
 
 
@@ -177,6 +179,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 STATIC_URL = "/static/"
 STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 
 CORS_ALLOW_ALL_ORIGINS = True
