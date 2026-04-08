@@ -77,23 +77,39 @@ def get_runtime_compiler_path():
     if not compiler_path.exists():
         return None, f"Compiler binary not found at {compiler_path}"
 
-    # In serverless deployments, executing files directly from the app bundle can fail.
-    # Copying to /tmp and executing there is more reliable.
-    if os.environ.get("VERCEL"):
-        runtime_compiler_path = Path("/tmp") / "compiler-runtime"
-        try:
-            shutil.copy2(compiler_path, runtime_compiler_path)
-            runtime_compiler_path.chmod(0o755)
-            return runtime_compiler_path, None
-        except OSError as exc:
-            return None, f"Failed to prepare runtime compiler: {exc}"
-
     try:
         compiler_path.chmod(0o755)
     except OSError:
         pass
 
     return compiler_path, None
+
+
+def run_compile_command(compiler_path, source_path, output_path):
+    return subprocess.run(
+        [str(compiler_path), str(source_path), "-o", str(output_path)],
+        capture_output=True,
+        text=True,
+        cwd=str(settings.BASE_DIR),
+    )
+
+
+def run_compile_with_fallback(compiler_path, source_path, output_path):
+    try:
+        return run_compile_command(compiler_path, source_path, output_path), None
+    except OSError as exc:
+        # On some serverless hosts, execution from the app bundle may fail.
+        # Fallback to a temporary executable copy.
+        if getattr(exc, "errno", None) in (8, 13):
+            runtime_compiler_path = Path("/tmp") / "compiler-runtime"
+            try:
+                shutil.copy2(compiler_path, runtime_compiler_path)
+                runtime_compiler_path.chmod(0o755)
+                return run_compile_command(runtime_compiler_path, source_path, output_path), None
+            except OSError as fallback_exc:
+                return None, f"Compiler could not be executed: {fallback_exc}"
+
+        return None, f"Compiler could not be executed: {exc}"
 
 
 ANSI_ESCAPE_RE = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
@@ -191,14 +207,13 @@ def file_view(request, folder_id, file_id):
             output_path = Path(temp_dir) / "output"
             source_path.write_text(editor_content, encoding="utf-8")
 
-            try:
-                compile_process = subprocess.run(
-                    [str(compiler_path), str(source_path), "-o", str(output_path)],
-                    capture_output=True,
-                    text=True,
-                    cwd=str(settings.BASE_DIR),
-                )
-            except OSError as exc:
+            compile_process, compile_error = run_compile_with_fallback(
+                compiler_path,
+                source_path,
+                output_path,
+            )
+
+            if compile_error:
                 return render(request, "file_view.html", {
                     "folder": folder,
                     "file": file,
@@ -207,7 +222,7 @@ def file_view(request, folder_id, file_id):
                     "editor_content": editor_content,
                     "stdin_value": stdin_value,
                     "output": "",
-                    "error": f"Compiler could not be executed: {exc}",
+                    "error": compile_error,
                 })
 
             if compile_process.returncode != 0:
