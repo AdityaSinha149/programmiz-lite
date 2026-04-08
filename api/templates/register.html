@@ -1,32 +1,39 @@
+{% load static %}
 <!DOCTYPE html>
 
 <html>
 <head>
     <title>Register</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
-    <h2>Register</h2>
+    <div class="app-shell">
+        <section class="panel auth-panel">
+            <p class="eyebrow">Programmiz Lite</p>
+            <h2>Register</h2>
 
-{% if error %}
-    <p style="color:red;">{{ error }}</p>
-{% endif %}
+            {% if error %}
+                <p class="error-text">{{ error }}</p>
+            {% endif %}
 
-<form method="POST">
-    {% csrf_token %}
+            <form class="auth-form" method="POST">
+                {% csrf_token %}
 
-    <label>Username:</label><br>
-    <input type="text" name="username" required><br><br>
+                <label class="field-label">Username</label>
+                <input type="text" name="username" required>
 
-    <label>Password:</label><br>
-    <input type="password" name="password" required><br><br>
+                <label class="field-label">Password</label>
+                <input type="password" name="password" required>
 
-    <label>Confirm Password:</label><br>
-    <input type="password" name="confirm_password" required><br><br>
+                <label class="field-label">Confirm Password</label>
+                <input type="password" name="confirm_password" required>
 
-    <button type="submit">Register</button>
-</form>
+                <button class="primary-button" type="submit">Register</button>
+            </form>
 
-<p>Already have an account? <a href="/api/login">Login</a></p>
+            <p class="auth-link">Already have an account? <a href="/login/">Login</a></p>
+        </section>
+    </div>
 
 </body>
 </html>

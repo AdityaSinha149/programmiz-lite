@@ -1,25 +1,53 @@
+{% load static %}
 <!DOCTYPE html>
 
 <html>
 <head>
     <title>Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
 </head>
 <body>
-    <h2>Welcome, {{ request.user.username }}</h2>
+    <div class="app-shell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Programmiz Lite</p>
+                <h2>Welcome, {{ request.user.username }}</h2>
+            </div>
+            <a class="secondary-button" href="/logout/">Logout</a>
+        </header>
 
-<h3>Your Folders:</h3>
+        <section class="panel">
+            <div class="panel-header">
+                <h3>Your Folders</h3>
+            </div>
 
-{% if folders %}
-    <ul>
-        {% for folder in folders %}
-            <li>{{ folder.name }}</li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <p>No folders found.</p>
-{% endif %}
+            {% if folders %}
+                <ul class="item-list">
+                    {% for folder in folders %}
+                        <li><a href="/dashboard/folder/{{ folder.id }}/">{{ folder.name }}</a></li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="muted">No folders found.</p>
+            {% endif %}
+        </section>
 
-<a href="/logout/">Logout</a>
+        <section class="panel">
+            <div class="panel-header">
+                <h3>Create New Folder</h3>
+            </div>
+
+            <form class="form-row" method="POST" action="/dashboard/create-folder/">
+                {% csrf_token %}
+                <input type="text" name="folder_name" placeholder="Folder name" required>
+                <button class="primary-button" type="submit">Create Folder</button>
+            </form>
+
+            {% if error %}
+                <p class="error-text">{{ error }}</p>
+            {% endif %}
+        </section>
+    </div>
 
 </body>
 </html>

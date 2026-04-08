@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>{{ folder.name }} - Folder</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">Folder</p>
+                <h2>{{ folder.name }}</h2>
+            </div>
+            <div class="topbar-actions">
+                <a class="secondary-button" href="/dashboard/">Dashboard</a>
+                <a class="secondary-button" href="/logout/">Logout</a>
+            </div>
+        </header>
+
+        <section class="panel">
+            <p class="breadcrumb">
+                <a href="/dashboard/">Dashboard</a>
+                {% for breadcrumb_folder in breadcrumb %}
+                    <span>/</span> <a href="/dashboard/folder/{{ breadcrumb_folder.id }}/">{{ breadcrumb_folder.name }}</a>
+                {% endfor %}
+            </p>
+        </section>
+
+        <section class="panel grid-two">
+            <div>
+                <div class="panel-header">
+                    <h3>Subfolders</h3>
+                </div>
+                {% if subfolders %}
+                    <ul class="item-list">
+                        {% for subfolder in subfolders %}
+                            <li><a href="/dashboard/folder/{{ subfolder.id }}/">📁 {{ subfolder.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="muted">No subfolders.</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <div class="panel-header">
+                    <h3>Files</h3>
+                </div>
+                {% if files %}
+                    <ul class="item-list">
+                        {% for file in files %}
+                            <li><a href="/dashboard/folder/{{ folder.id }}/file/{{ file.id }}/">📄 {{ file.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="muted">No files found in this folder.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="panel grid-two">
+            <div>
+                <div class="panel-header">
+                    <h3>Create Subfolder</h3>
+                </div>
+                <form class="form-row" method="POST" action="/dashboard/folder/{{ folder.id }}/create-subfolder/">
+                    {% csrf_token %}
+                    <input type="text" name="folder_name" placeholder="Subfolder name" required>
+                    <button class="primary-button" type="submit">Create</button>
+                </form>
+            </div>
+
+            <div>
+                <div class="panel-header">
+                    <h3>Create File</h3>
+                </div>
+                <form class="form-row" method="POST" action="/dashboard/folder/{{ folder.id }}/create-file/">
+                    {% csrf_token %}
+                    <input type="text" name="file_name" placeholder="File name" required>
+                    <button class="primary-button" type="submit">Create</button>
+                </form>
+            </div>
+        </section>
+
+        {% if error %}
+            <p class="error-text">{{ error }}</p>
+        {% endif %}
+    </div>
+
+</body>
+</html>

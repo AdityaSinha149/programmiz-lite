@@ -24,6 +24,7 @@ class Folder(models.Model):
         ]
 class File(models.Model):
     name = models.CharField(max_length=100)
+    content = models.TextField(blank=True, default="")
     folder = models.ForeignKey(Folder, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 

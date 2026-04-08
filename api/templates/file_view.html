@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>{{ file.name }} - File</title>
+    <link rel="stylesheet" href="{% static 'css/site.css' %}">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">File</p>
+                <h2>{{ file.name }}</h2>
+            </div>
+            <div class="topbar-actions">
+                <a class="secondary-button" href="/dashboard/folder/{{ folder.id }}/">Back</a>
+                <a class="secondary-button" href="/logout/">Logout</a>
+            </div>
+        </header>
+
+        <section class="panel">
+            <p class="breadcrumb">
+                <a href="/dashboard/">Dashboard</a>
+                {% for breadcrumb_folder in breadcrumb %}
+                    <span>/</span> <a href="/dashboard/folder/{{ breadcrumb_folder.id }}/">{{ breadcrumb_folder.name }}</a>
+                {% endfor %}
+                <span>/</span> {{ file.name }}
+            </p>
+        </section>
+
+        <section class="panel">
+            <form method="POST" action="">
+                {% csrf_token %}
+                <label class="field-label" for="content">Editor</label>
+                <textarea id="content" name="content" class="code-editor" spellcheck="false">{{ editor_content|default:file.content }}</textarea>
+
+                {% if is_psa %}
+                    <label class="field-label" for="stdin">Program Input</label>
+                    <textarea id="stdin" name="stdin" class="input-box" placeholder="Type input here">{{ stdin_value|default:'' }}</textarea>
+                {% endif %}
+
+                <div class="run-toolbar">
+                    <button class="primary-button" type="submit" name="action" value="save">Save</button>
+                    {% if is_psa %}
+                        <button class="run-button" type="submit" name="action" value="run">Run</button>
+                    {% endif %}
+                </div>
+            </form>
+        </section>
+
+        {% if is_psa %}
+            <section class="panel">
+                <div class="panel-header">
+                    <h3>Output</h3>
+                </div>
+                <pre class="output-box">{{ output|default:'No output yet.' }}</pre>
+                {% if error %}
+                    <p class="error-text">{{ error }}</p>
+                {% endif %}
+            </section>
+        {% endif %}
+    </div>
+
+</body>
+</html>
