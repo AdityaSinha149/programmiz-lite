@@ -10,6 +10,7 @@ import subprocess
 import tempfile
 import shutil
 import os
+import re
 
 
 def home(request):
@@ -93,6 +94,15 @@ def get_runtime_compiler_path():
         pass
 
     return compiler_path, None
+
+
+ANSI_ESCAPE_RE = re.compile(r"\x1B\[[0-?]*[ -/]*[@-~]")
+
+
+def normalize_process_output(stdout_text, stderr_text):
+    combined = (stdout_text or "") + (stderr_text or "")
+    cleaned = ANSI_ESCAPE_RE.sub("", combined).strip()
+    return cleaned or "No compiler output was returned."
 
 #when u redirect to dashboard page this runs and fetches the folders
 @login_required
@@ -201,6 +211,10 @@ def file_view(request, folder_id, file_id):
                 })
 
             if compile_process.returncode != 0:
+                compile_output = normalize_process_output(
+                    compile_process.stdout,
+                    compile_process.stderr,
+                )
                 return render(request, "file_view.html", {
                     "folder": folder,
                     "file": file,
@@ -208,8 +222,8 @@ def file_view(request, folder_id, file_id):
                     "is_psa": is_psa,
                     "editor_content": editor_content,
                     "stdin_value": stdin_value,
-                    "output": compile_process.stdout + compile_process.stderr,
-                    "error": "Compilation failed",
+                    "output": compile_output,
+                    "error": f"Compilation failed (exit code {compile_process.returncode})",
                 })
 
             try:
@@ -222,7 +236,10 @@ def file_view(request, folder_id, file_id):
                     cwd=str(temp_dir),
                     timeout=30,
                 )
-                output_text = run_process.stdout + run_process.stderr
+                output_text = normalize_process_output(
+                    run_process.stdout,
+                    run_process.stderr,
+                )
             except subprocess.TimeoutExpired:
                 output_text = "Program timed out after 30 seconds."
             except OSError as exc:
